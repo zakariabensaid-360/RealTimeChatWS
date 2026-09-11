@@ -1,6 +1,6 @@
 const { db } = require('../main');
 
-async function getUser({ email, password }) {
+async function Login({ email, password }) {
   // Corrected SQL syntax and table target
   const sql = `
     SELECT id, user, email, isOnline, BlockList, Conversations 
@@ -22,6 +22,6 @@ async function getUser({ email, password }) {
   }
 }
 
-module.exports = { getUser };
+module.exports = { Login };
 
 
