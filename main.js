@@ -1,6 +1,8 @@
 const { Database} = require("sqlite")
 const db = new Database()
 const WebSocket = require("ws");
+const { getUser } = require("./models/GetUser");
+const { createUser } = require("./models/CreateUser");
 const wss = new WebSocket.Server({port: 8080});
 
 
@@ -14,22 +16,29 @@ const SendMessqge = (to, message, ws) => {
     const user = users.get(to)
     user.send(message)
 }
-wss.on("connection", (ws) => {
-    
+
+
+
+wss.on("connection", (ws) => {    
     ws.on("message", (raw) => {
+
         try {
             const data = JSON.parse(raw); 
-            if (!data.user) throw "The user is required"
-            if(users.get(data.user) === undefined) {
-                users.set(data.user, ws)
+            if (!data.password || !data.email) throw "missing required feilds"
+            if(getUser(data.email, data.password) === null) {
+                ws.send({
+                    "error": 404,
+                    "errorMessage": "the user does not exist"
+                })
+                ws.close()
             }  
+
 
             switch(data.type) {
                 case "SendMessqge":
                     SendMessqge(data.to, data.message, ws)
             }
-    
-            
+
 
         } catch (error) {
             ws.close(); 

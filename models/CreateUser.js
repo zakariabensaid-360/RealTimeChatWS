@@ -1,13 +1,21 @@
 const { db } = require('../main')
 
-db.exec(`
-CREATE TABLE IF NOT EXISTS users (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  user TEXT NOT NULL,
-  password TEXT NOT NULL,
-  email TEXT NOT NULL UNIAUE,
-  isOnline BOOLEAN,
-  BlockList JSON,
-  Conversations JSON
-);
-`)
+async function createUser({ user, password, email }) {
+  const sql = `
+    INSERT INTO users (user, password, email)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `;
+  try {
+    const result = await db.run(sql, [
+      user,
+      password,
+      email,
+    ]);
+
+    return { id: result.lastID, user, email }
+  } catch (error) {
+    throw error
+  }
+}
+
+module.exports = { createUser };
