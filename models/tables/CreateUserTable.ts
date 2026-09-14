@@ -1,5 +1,11 @@
 import { db } from "../../server";
 
+interface User {
+    id: number,
+    username: string,
+    permissions: "user" | "admin"
+}
+
 export default function CreateUserTable() {
     db.exec(`
         CREATE TABLE IF NOT EXISTS users (
@@ -12,6 +18,10 @@ export default function CreateUserTable() {
             created_at DATETIME DEFAULT CURRENT_TIMESTAMP
         );
     `);
+}
+
+export type {
+    User
 }
 
 
